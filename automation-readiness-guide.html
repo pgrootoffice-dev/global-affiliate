@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What Should You Automate First? | Useful Work Tools</title>
+  <meta name="description" content="A low-risk framework for choosing a first workflow to automate, documenting exceptions, measuring value, and avoiding brittle systems.">
+  <meta name="author" content="Useful Work Tools Editorial Desk"><meta property="article:published_time" content="2026-08-14"><meta property="article:modified_time" content="2026-08-14">
+  <meta property="og:type" content="article"><meta property="og:site_name" content="Useful Work Tools"><meta property="og:title" content="What Should You Automate First?"><meta property="og:description" content="Find repeatable, low-risk work and automate it without turning a small annoyance into a fragile system."><meta property="og:url" content="https://pgrootoffice-dev.github.io/global-affiliate/automation-readiness-guide.html">
+  <link rel="canonical" href="https://pgrootoffice-dev.github.io/global-affiliate/automation-readiness-guide.html"><link rel="icon" href="assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#article">Skip to article</a>
+  <header class="site-header"><div class="nav-shell"><a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true">U</span>Useful Work Tools</a><nav class="site-nav" aria-label="Primary navigation"><a href="index.html#guides">Guides</a><a href="about.html">About</a><a href="editorial-policy.html">Editorial policy</a><a href="contact.html">Contact</a></nav></div></header>
+  <main>
+    <header class="article-header container"><p class="kicker">Automation guide</p><h1>What Should You Automate First?</h1><p class="dek">The best first automation is rarely the flashiest. It is a stable, visible, low-risk workflow whose rules you already understand.</p><div class="byline"><span>By Useful Work Tools Editorial Desk</span><span>Published and reviewed August 14, 2026</span><span>9 minute read</span></div></header>
+    <div class="container article-layout">
+      <article class="article-body" id="article">
+        <div class="disclosure-note"><p><strong>Affiliate status:</strong> This vendor-neutral guide contains no affiliate links. It describes a selection method, not results from a specific automation platform or an unperformed product test.</p></div>
+        <p>Automation is attractive because it promises to remove repetitive work. But a workflow that is poorly understood does not become clearer when automated. It becomes harder to observe, troubleshoot, and change.</p>
+        <p>Choose the process before the platform. A modest workflow that runs reliably and fails visibly is a better first project than a broad system with unclear ownership.</p>
+
+        <h2 id="inventory">1. Inventory repeated actions</h2>
+        <p>For one week, note tasks that involve moving information between systems, applying the same rule, creating the same structure, or sending the same kind of notification. Examples include:</p>
+        <ul><li>copying approved form responses into a tracker,</li><li>creating a task when a defined status changes,</li><li>saving a standardized attachment to a known folder,</li><li>sending a reminder before a fixed deadline, or</li><li>formatting a recurring internal summary from structured fields.</li></ul>
+        <p>Do not filter the list yet. The inventory is about seeing repetition, not proving that everything should be automated.</p>
+
+        <h2 id="score">2. Score each candidate</h2>
+        <p>A strong first candidate combines frequency and stability with low consequence when something goes wrong.</p>
+        <div class="table-wrap"><table><thead><tr><th>Factor</th><th>Promising signal</th><th>Warning signal</th></tr></thead><tbody>
+          <tr><td>Frequency</td><td>Happens often enough to matter</td><td>Occurs a few times a year</td></tr>
+          <tr><td>Rule clarity</td><td>Inputs and decisions are explicit</td><td>Relies on tacit judgment</td></tr>
+          <tr><td>Variation</td><td>Exceptions are rare and known</td><td>Every case is different</td></tr>
+          <tr><td>Risk</td><td>An error is reversible</td><td>Could expose data or create financial/legal harm</td></tr>
+          <tr><td>Visibility</td><td>Success and failure are easy to detect</td><td>Silent failure may persist</td></tr>
+          <tr><td>Ownership</td><td>One person owns the workflow</td><td>No one owns maintenance</td></tr>
+        </tbody></table></div>
+        <p>High-risk actions—deleting records, changing permissions, sending external commitments, or moving money—need stronger controls and are poor first experiments.</p>
+
+        <h2 id="document">3. Run the process manually from a checklist</h2>
+        <p>Write the workflow as a sequence of observable steps. Include the trigger, required fields, decision rules, destination, confirmation, and failure response.</p>
+        <p>Then ask someone unfamiliar with the process to follow the checklist using safe sample data. Every question reveals an undocumented assumption. Resolve those assumptions before building.</p>
+        <blockquote>If a human cannot follow the documented rule, an automation will probably encode missing context as a bug.</blockquote>
+
+        <h2 id="boundary">4. Draw the permission boundary</h2>
+        <p>Automation platforms often connect to multiple services. Each connection may be able to read, create, update, or delete data. Map the minimum access the workflow needs.</p>
+        <ul><li>Which account owns the connection?</li><li>Which records or folders can it access?</li><li>Does it need write access, or is read-only enough?</li><li>Where are credentials stored and who can rotate them?</li><li>What information passes through the automation provider?</li><li>What happens when an employee, plan, or vendor changes?</li></ul>
+        <p>Least privilege is not only a security principle. It also reduces the damage a configuration mistake can cause.</p>
+
+        <h2 id="small">5. Build the smallest complete loop</h2>
+        <p>A useful pilot has one trigger, a limited set of conditions, one primary action, and a visible record of what happened. Avoid adding branching logic simply because the platform makes it easy.</p>
+        <p>For a workflow that creates a task from an approved form submission, the first version might:</p>
+        <ol><li>detect one approved status,</li><li>confirm required fields are present,</li><li>create one task in a test project, and</li><li>record a timestamp and source identifier.</li></ol>
+        <p>Human review can remain in the loop. Automation does not need to remove every click to create value.</p>
+
+        <h2 id="failure">6. Design failure before launch</h2>
+        <p>Decide how the workflow will reveal and recover from errors. Useful safeguards include test destinations, duplicate detection, clear logs, error notifications, retry limits, and a documented manual fallback.</p>
+        <div class="note"><p><strong>Minimum recovery test:</strong> disable a connection or remove a required field. Confirm that the workflow fails visibly, does not create misleading partial results, and can be resumed without duplicating work.</p></div>
+
+        <h2 id="measure">7. Measure the full outcome</h2>
+        <p>Track more than runs completed. Compare time removed from the manual process against review, exception handling, and maintenance time. Also watch error rate, duplicated work, delay, and the number of people who must understand the system.</p>
+        <p>Keep the automation when it is reliable, understandable, and cheaper to operate than the work it replaces. Simplify or remove it when maintenance becomes the new repetitive task.</p>
+
+        <h2 id="platform">Choose a platform last</h2>
+        <p>Once the workflow is documented, platform requirements become clearer: the necessary connectors, trigger frequency, data location, permissions, error handling, usage volume, collaboration controls, and budget.</p>
+        <p>That list is more useful than a generic “best automation tool” ranking. It lets you compare current vendor documentation against your actual workflow and makes it easier to switch if the fit changes.</p>
+        <hr>
+        <p><strong>Editorial note:</strong> This guide addresses general workflow design, not security, legal, or compliance advice. Higher-risk or regulated processes require review by the appropriate qualified owners.</p>
+      </article>
+      <aside class="article-aside"><strong>In this guide</strong><nav aria-label="Article sections"><a href="#inventory">Inventory actions</a><a href="#score">Score candidates</a><a href="#document">Document the process</a><a href="#boundary">Map permissions</a><a href="#small">Build a small loop</a><a href="#failure">Design failure</a><a href="#measure">Measure outcome</a><a href="#platform">Choose a platform</a></nav><div class="aside-rule"></div><strong>Editorial links</strong><a href="editorial-policy.html">Editorial policy</a><a href="disclosure.html">Affiliate disclosure</a></aside>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="container footer-grid"><div><h2>Useful Work Tools</h2><p>Independent guides for making thoughtful decisions about the software behind modern work.</p></div><div><h3>More guides</h3><div class="footer-links"><a href="protect-focus-time.html">Protect focus time</a><a href="choose-ai-work-assistant.html">Choose an AI assistant</a></div></div><div><h3>Transparency</h3><div class="footer-links"><a href="editorial-policy.html">Editorial policy</a><a href="disclosure.html">Affiliate disclosure</a><a href="privacy.html">Privacy</a></div></div></div><div class="container footer-bottom">© 2026 Useful Work Tools. Independently published.</div></footer>
+</body>
+</html>
