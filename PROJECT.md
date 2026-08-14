@@ -20,4 +20,11 @@ Reach the first real affiliate revenue, then scale toward ¥30,000+/month.
 - First KPI: publish -> impressions -> outbound click -> affiliate click -> first $1.
 
 ## Status
-Repository initialized. Next: validate demand/angle, obtain affiliate approval/link, publish first useful article + Pin.
+The first publication-ready site is implemented with three original guides, shared mobile-first styling, editorial and affiliate policies, privacy information, a public contact channel, and baseline technical SEO.
+
+Next operational steps:
+- Review all public copy and policy statements before submitting an affiliate application.
+- Merge approved site changes to `main` so GitHub Pages can publish them.
+- Obtain affiliate approval before adding any monetized link.
+- Add affiliate links only with a nearby disclosure and preserve an ordinary-link fallback.
+- Continue publishing useful assets before adding analytics or larger automation.
