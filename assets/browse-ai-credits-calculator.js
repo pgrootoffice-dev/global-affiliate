@@ -74,14 +74,15 @@
     else if (creditsPerMonth <= 50) { state = "FREE_MAY_BE_TIGHT"; }
     else { state = "PAID_LIKELY_NEEDED"; }
 
-    // Personal has three billing options. The two annual plans grant their
-    // credits upfront for the whole term and impose no monthly cap; the
-    // monthly plan resets at 2,000 credits every cycle.
+    // Only the two annual plans are recommended automatically. creditsPerYear
+    // is creditsPerMonth * 12, so any yearly total above 24,000 also means more
+    // than 2,000 credits in the average month — a monthly-plan branch here
+    // could never be reached. Monthly Personal is surfaced as a flexibility
+    // alternative in the copy instead.
     var planRec = null;
     if (state === "PAID_LIKELY_NEEDED") {
       if (creditsPerYear <= 12000) { planRec = "ANNUAL_12K"; }
       else if (creditsPerYear <= 24000) { planRec = "ANNUAL_24K"; }
-      else if (creditsPerMonth <= 2000) { planRec = "MONTHLY_2K"; }
       else { planRec = "ABOVE_PERSONAL"; }
     }
 
@@ -177,23 +178,26 @@
       "so an uneven month is fine — but the grant has to last the whole term, " +
       "and this figure is an average month rather than your heaviest one.";
 
+    // Monthly Personal is never recommended automatically — it is offered as a
+    // flexibility alternative wherever an annual plan is suggested.
+    var MONTHLY_ALTERNATIVE = "If you'd rather not commit to a year, Monthly Personal " +
+      "($48/month, 2,000 credits/month) is the flexible alternative. It resets to " +
+      "2,000 credits every billing cycle rather than granting the credits upfront.";
+
     function planHtml(r) {
       if (r.planRec === "ANNUAL_12K") {
         return '<p class="calc-plan">Personal annual 12k ($228/year, 12,000 credits upfront) covers this with ' +
           fmt(12000 - r.creditsPerYear) + ' credits to spare.</p>' +
-          '<p class="calc-plan-note">' + UPFRONT_NOTE + '</p>';
+          '<p class="calc-plan-note">' + UPFRONT_NOTE + '</p>' +
+          '<p class="calc-plan-note">' + MONTHLY_ALTERNATIVE + '</p>';
       }
       if (r.planRec === "ANNUAL_24K") {
         return '<p class="calc-plan">This exceeds the 12,000 credits in the annual 12k plan. ' +
           'Personal annual 24k ($456/year, 24,000 credits upfront) covers it with ' +
           fmt(24000 - r.creditsPerYear) + ' credits to spare, and costs less than twelve months of ' +
           'monthly billing ($576) for the same annual capacity.</p>' +
-          '<p class="calc-plan-note">' + UPFRONT_NOTE + '</p>';
-      }
-      if (r.planRec === "MONTHLY_2K") {
-        return '<p class="calc-plan">Personal monthly ($48/month, 2,000 credits/month) covers this. ' +
-          'Unlike the annual plans, this is a cap on every single month rather than an upfront grant, ' +
-          'so a heavy month cannot borrow from a light one.</p>';
+          '<p class="calc-plan-note">' + UPFRONT_NOTE + '</p>' +
+          '<p class="calc-plan-note">' + MONTHLY_ALTERNATIVE + '</p>';
       }
       if (r.planRec === "ABOVE_PERSONAL") {
         return '<p class="calc-plan">This exceeds what the Personal plan covers in any of its three forms — ' +
