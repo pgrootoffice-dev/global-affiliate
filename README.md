@@ -6,7 +6,7 @@ Source for **Useful Work Tools**, an independent English-language publication ab
 
 The site is a dependency-free static build served by GitHub Pages from the repository root.
 
-- Production URL: https://pgrootoffice-dev.github.io/global-affiliate/
+- Production URL: https://usefulworktools.com/
 - Pages source: `main` / root
 - Local preview: `python3 -m http.server 8000`
 
