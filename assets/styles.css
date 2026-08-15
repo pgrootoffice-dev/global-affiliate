@@ -244,7 +244,10 @@ p { margin: 0 0 1.2em; }
   padding-bottom: 100px;
 }
 
-.article-body { font-size: 1.04rem; }
+/* min-width:0 lets this grid item shrink below its min-content width, so a wide
+   table scrolls inside .table-wrap instead of widening the column and pushing
+   the edge-to-edge mobile bleed past the viewport. */
+.article-body { min-width: 0; font-size: 1.04rem; }
 .article-body h2 { margin: 2.2em 0 0.55em; font-size: clamp(1.7rem, 4vw, 2.35rem); }
 .article-body h3 { margin: 1.8em 0 0.45em; font-size: 1.35rem; }
 .article-body ul, .article-body ol { margin: 0 0 1.5em; padding-left: 1.35em; }
