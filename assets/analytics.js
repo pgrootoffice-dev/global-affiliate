@@ -5,9 +5,13 @@
  * page's <head>. This file only adds the site-specific events, so there is one
  * place to maintain them rather than a copy per article.
  *
- * Deliberately NOT implemented here: page_view, scroll, outbound click, file
- * download, form interaction. GA4 enhanced measurement already collects those,
- * and duplicating them would double-count.
+ * Deliberately NOT implemented here: page_view, outbound click, file download,
+ * form interaction. GA4 enhanced measurement already collects those, and
+ * duplicating them would double-count.
+ *
+ * scroll_depth is the one deliberate overlap. Enhanced measurement's `scroll`
+ * only reports the 90% mark, which cannot show where readers actually stop.
+ * Ours is a separate event name, so the two coexist without double-counting.
  *
  * Privacy rules for everything below:
  *   - never read or send the value of any form field
@@ -49,12 +53,18 @@
   // ------------------------------------------------------------- affiliate --
 
   /*
-   * Slot name comes from the `<!-- AFFILIATE_SLOT:NAME -->` comment that sits
-   * immediately before each affiliate anchor. Falling back to data-affiliate
-   * means a new ASP only has to add the attribute to be measured.
+   * Slot identity is read from DOM structure, never from the href.
+   *
+   * Order: an explicit data-slot attribute, then the
+   * `<!-- AFFILIATE_SLOT:NAME -->` comment already present before each CTA,
+   * then the data-affiliate value. This keeps working unchanged when an
+   * official URL is swapped for an approved affiliate URL.
    */
-  function slotFor(anchor) {
-    var node = anchor.previousSibling;
+  function slotFor(element) {
+    var explicit = element.getAttribute("data-slot");
+    if (explicit) { return normalise(explicit); }
+
+    var node = element.previousSibling;
     var hops = 0;
     while (node && hops < 4) {
       if (node.nodeType === 8) {
@@ -66,25 +76,35 @@
       node = node.previousSibling;
       hops++;
     }
-    return normalise(anchor.getAttribute("data-affiliate")) || "UNKNOWN";
+    return normalise(element.getAttribute("data-affiliate")) || "UNKNOWN";
+  }
+
+  // Resolved at click time, so a later href swap is reported automatically.
+  function linkUrlFor(element) {
+    if (element.href) { return element.href; }
+    var anchor = element.querySelector ? element.querySelector("a[href]") : null;
+    if (!anchor) { anchor = element.closest ? element.closest("a[href]") : null; }
+    return anchor ? anchor.href : "";
   }
 
   /*
-   * One delegated listener for the whole document: every current and future
-   * `a[data-affiliate]` is covered without touching article markup again.
+   * One delegated listener for the whole document, keyed on the
+   * [data-affiliate] attribute and nothing else. The href is never a matching
+   * condition, so replacing an official URL with an approved affiliate URL
+   * needs no change here. Any future ASP is measured by adding the attribute.
    */
   function onDocumentClick(event) {
     var target = event.target;
     if (!target || typeof target.closest !== "function") { return; }
-    var anchor = target.closest("a[data-affiliate]");
-    if (!anchor) { return; }
+    var element = target.closest("[data-affiliate]");
+    if (!element) { return; }
 
     send("affiliate_cta_click", {
-      affiliate_name: anchor.getAttribute("data-affiliate") || "unknown",
+      affiliate_name: element.getAttribute("data-affiliate") || "unknown",
       page_path: pagePath(),
-      link_url: anchor.href || "",
-      link_text: shortText(anchor.textContent),
-      slot: slotFor(anchor)
+      link_url: linkUrlFor(element),
+      link_text: shortText(element.textContent),
+      slot: slotFor(element)
     });
   }
 
@@ -126,11 +146,78 @@
     form.addEventListener("click", onChipClick);
   }
 
+  // ---------------------------------------------------------- scroll depth --
+
+  var SCROLL_THRESHOLDS = [25, 50, 75, 90];
+
+  /*
+   * Reports how far down a page readers actually get, so Design v2 can see
+   * where attention stops rather than only who reached 90%.
+   *
+   * Each threshold sends at most once per page view. State is plain closure
+   * variables, so an ordinary navigation on this static site starts clean —
+   * there is no SPA router to reset around.
+   *
+   * Skipped on noindex pages (404 and friends), which are not content we are
+   * trying to improve.
+   */
+  function watchScrollDepth() {
+    if (document.querySelector('meta[name="robots"][content*="noindex"]')) { return; }
+
+    var pending = SCROLL_THRESHOLDS.slice();
+    var ticking = false;
+
+    function viewedPercent() {
+      var doc = document.documentElement;
+      var body = document.body;
+      var viewport = window.innerHeight || doc.clientHeight || 0;
+      var full = Math.max(
+        doc.scrollHeight || 0,
+        doc.offsetHeight || 0,
+        body ? body.scrollHeight || 0 : 0
+      );
+      // A page that cannot scroll reports nothing: "reached 75%" should always
+      // mean the reader scrolled there, never that the page was simply short.
+      if (full - viewport <= 0) { return -1; }
+      var top = window.pageYOffset || doc.scrollTop || 0;
+      return ((top + viewport) / full) * 100;
+    }
+
+    function measure() {
+      ticking = false;
+      var percent = viewedPercent();
+      if (percent < 0) { return; }
+      // Fire every threshold passed, lowest first, so 25 >= 50 >= 75 >= 90
+      // stays true even when an anchor jump skips ahead.
+      while (pending.length && percent >= pending[0]) {
+        var depth = pending.shift();
+        send("scroll_depth", { page_path: pagePath(), depth_percent: depth });
+      }
+      if (!pending.length) { teardown(); }
+    }
+
+    function onScroll() {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(measure);
+    }
+
+    function teardown() {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+    }
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    measure();
+  }
+
   // ------------------------------------------------------------------ init --
 
   function init() {
     document.addEventListener("click", onDocumentClick);
     watchCalculator();
+    watchScrollDepth();
   }
 
   if (document.readyState === "loading") {
@@ -142,6 +229,7 @@
   // Exposed for tests and for confirming the ID a page is configured with.
   window.UWTAnalytics = {
     MEASUREMENT_ID: MEASUREMENT_ID,
+    SCROLL_THRESHOLDS: SCROLL_THRESHOLDS,
     pagePath: pagePath,
     slotFor: slotFor
   };
